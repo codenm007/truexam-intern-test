@@ -188,8 +188,60 @@ const add_class = async (req, res, next) => {
       });
   }; 
 
+//teacher add students in class
+const add_student_in_class = async (req, res, next) => {
+    let jwtlength = req.get("Authorization").length;
+    let decoded = jwt_decode(req.get("Authorization").slice(7, jwtlength));
+
+    const {class_id,student_id} = req.body;
+  
+    //checking if the fields are none
+    if (!class_id || !student_id) {
+      return res.status(200).json({
+        resp_code: 400,
+        resp_message: "Fields Empty!",
+      });
+    }
+  
+    //checking the given student id is valid or not 
+
+    User.forge({id:student_id, role_code:3})
+    .fetch()
+    .then(() => {
+    const new_class_student = new students_in_classes({
+     user_id:student_id,
+     class_id:class_id,
+     is_student_suspended:false
+    });
+  
+    new_class_student
+      .save()
+      .then((data) => {
+                return res.status(200).json({
+                  resp_code: 200,
+                  resp_message: "Student added to class successfully!",
+                });
+
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).json({
+          resp_code: 400,
+          resp_message: err,
+        });
+      });
+
+    }).catch(err =>{
+        return res.status(400).json({
+            resp_code: 400,
+            resp_message: 'Invalid student id passed !',
+          });
+    })
+  };   
+
   module.exports = {
       login,
       signup,
-      add_class
+      add_class,
+      add_student_in_class
   }
