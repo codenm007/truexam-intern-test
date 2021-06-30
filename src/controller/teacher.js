@@ -291,10 +291,41 @@ const remove_student_from_class = async (req, res, next) => {
     })
   };  
 
+//get classes with students
+const get_classes = async (req, res, next) => {
+    let jwtlength = req.get("Authorization").length;
+    let decoded = jwt_decode(req.get("Authorization").slice(7, jwtlength));
+
+
+    //checking the given student id is valid or not 
+
+    classes.forge({user_id:decoded.sub})
+    .fetchAll({
+        withRelated: ["students"],
+    })
+    .then((data) => {
+   
+                return res.status(200).json({
+                  resp_code: 200,
+                  resp_message: "Classes fetched successfully",
+                  data:data
+                });
+
+    }).catch(err =>{
+        return res.status(400).json({
+            resp_code: 400,
+            resp_message: err
+          });
+    })
+  };  
+
+
+
   module.exports = {
       login,
       signup,
       add_class,
       add_student_in_class,
-      remove_student_from_class
+      remove_student_from_class,
+      get_classes
   }
