@@ -5,6 +5,7 @@ const jwt_decode = require("jwt-decode");
 const validator = require("validator");
 //importing models
 const User = require ("../models/user");
+const {students_in_classes} = require("../models/class");
 
 //for signup
 const signup = async (req, res, next) => {
@@ -147,9 +148,33 @@ const login = async (req, res, next) => {
       });
   };
 
-  
+//student get classes with task 
+const myclasses = async (req, res, next) => {
+  let jwtlength = req.get("Authorization").length;
+  let decoded = jwt_decode(req.get("Authorization").slice(7, jwtlength));
+   
+  students_in_classes.where({
+    user_id:decoded.sub
+  }).fetchAll()
+  .then(data =>{
+    return res.status(200).json({
+      resp_code: 200,
+      resp_message: "Student classes fetched successfully!",
+      data:data,
+    });
+  })
+  .catch(err =>{
+    return res.status(400).json({
+      resp_code: 400,
+      resp_message: err,
+      data: "",
+    });
+  })
+
+}
 
   module.exports = {
       login,
-      signup
+      signup,
+      myclasses
   }
