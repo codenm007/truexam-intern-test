@@ -405,6 +405,41 @@ const edit_tasks = async (req, res, next) => {
   }; 
   
   //get tasks with submissions
+  const get_task_with_submissions = async (req, res, next) => {
+    let jwtlength = req.get("Authorization").length;
+    let decoded = jwt_decode(req.get("Authorization").slice(7, jwtlength));
+
+    const {task_id} = req.params;
+  
+    //checking if the fields are none
+    if (!task_id) {
+      return res.status(200).json({
+        resp_code: 400,
+        resp_message: "Fields Empty!",
+      });
+    }
+  
+
+    tasks.where({id:task_id,user_id:decoded.sub})
+    .fetchAll({
+        withRelated: ["submissions"],
+    })
+      .then((data) => {
+                return res.status(200).json({
+                  resp_code: 200,
+                  resp_message: "Tasks data fetched successfully!",
+                  data:data
+                });
+
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).json({
+          resp_code: 400,
+          resp_message: err,
+        });
+      });
+  };  
 
   module.exports = {
       login,
@@ -414,5 +449,6 @@ const edit_tasks = async (req, res, next) => {
       remove_student_from_class,
       get_classes,
       add_tasks,
-      edit_tasks
+      edit_tasks,
+      get_task_with_submissions
   }

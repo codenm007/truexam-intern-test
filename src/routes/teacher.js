@@ -7,7 +7,7 @@ const passport = require("../config/passport");
 const teacher_role_check = require('../middlewares/teacher_role_check');
 
 //imporing controllers
-const {login,signup,add_class,add_student_in_class,remove_student_from_class,get_classes,add_tasks,edit_tasks} = require("../controller/teacher")
+const {login,signup,add_class,add_student_in_class,remove_student_from_class,get_classes,add_tasks,edit_tasks,get_task_with_submissions} = require("../controller/teacher")
 
 //public roues
 
@@ -41,6 +41,13 @@ router.post(
     passport.authenticate("jwt", { session: false }),
     teacher_role_check,
     get_classes
+  );
+
+  router.get(
+    "/get_task_with_submissions/:task_id",
+    passport.authenticate("jwt", { session: false }),
+    teacher_role_check,
+    get_task_with_submissions
   );
 
   router.post(
