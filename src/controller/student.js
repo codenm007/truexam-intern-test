@@ -6,6 +6,7 @@ const validator = require("validator");
 //importing models
 const User = require ("../models/user");
 const {students_in_classes} = require("../models/class");
+const { tasks } = require("../models/tasks");
 
 //for signup
 const signup = async (req, res, next) => {
@@ -173,8 +174,44 @@ const myclasses = async (req, res, next) => {
 
 }
 
+//student get tasks class basis
+const get_tasks = async (req, res, next) => {
+  let jwtlength = req.get("Authorization").length;
+  let decoded = jwt_decode(req.get("Authorization").slice(7, jwtlength));
+
+  const {class_id} = req.params;
+
+  if (!class_id) {
+    return res.status(400).json({
+      resp_code: 400,
+      resp_message: "Fields Empty !",
+      data: "",
+    });
+  }
+   
+  tasks.where({
+    class_id:class_id
+  }).fetchAll()
+  .then(data =>{
+    return res.status(200).json({
+      resp_code: 200,
+      resp_message: "Student tasks fetched successfully!",
+      data:data,
+    });
+  })
+  .catch(err =>{
+    return res.status(400).json({
+      resp_code: 400,
+      resp_message: err,
+      data: "",
+    });
+  })
+
+} 
+
   module.exports = {
       login,
       signup,
-      myclasses
+      myclasses,
+      get_tasks
   }

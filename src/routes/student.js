@@ -4,7 +4,7 @@ const router = express.Router();
 const passport = require("../config/passport");
 
 //imporing controllers
-const {login,signup,myclasses} = require("../controller/student");
+const {login,signup,myclasses,get_tasks} = require("../controller/student");
 const student_role_check = require("../middlewares/student_role_check");
 
 //public roues
@@ -20,5 +20,11 @@ router.get(
     myclasses
   );
 
+  router.get(
+    "/get_tasks/:class_id",
+    passport.authenticate("jwt", { session: false }),
+    student_role_check,
+    get_tasks
+  );
 
 module.exports = router;
