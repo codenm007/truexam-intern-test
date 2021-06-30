@@ -117,7 +117,8 @@ const login = async (req, res, next) => {
                     //console.log(customToken,"hvhvggjj");
                     const payload = {
                       sub: `${user.id}`,
-                      email: req.body.email
+                      email: req.body.email,
+                      role_code:3
                     };
   
                     const token = JWT.sign(payload, process.env.SECRET_OR_KEY, {

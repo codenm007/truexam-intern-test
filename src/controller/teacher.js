@@ -5,6 +5,7 @@ const jwt_decode = require("jwt-decode");
 const validator = require("validator");
 //importing models
 const User = require ("../models/user");
+const {classes,students_in_classes} = require ("../models/class");
 
 //for signup
 const signup = async (req, res, next) => {
@@ -117,7 +118,8 @@ const login = async (req, res, next) => {
                     //console.log(customToken,"hvhvggjj");
                     const payload = {
                       sub: `${user.id}`,
-                      email: req.body.email
+                      email: req.body.email,
+                      role_code:2
                     };
   
                     const token = JWT.sign(payload, process.env.SECRET_OR_KEY, {
@@ -147,8 +149,47 @@ const login = async (req, res, next) => {
   };
 
   
+//teacher add class
+const add_class = async (req, res, next) => {
+    let jwtlength = req.get("Authorization").length;
+    let decoded = jwt_decode(req.get("Authorization").slice(7, jwtlength));
+
+    const {subject_id,name} = req.body;
+  
+    //checking if the fields are none
+    if (!subject_id || !name) {
+      return res.status(200).json({
+        resp_code: 400,
+        resp_message: "Fields Empty!",
+      });
+    }
+  
+    const new_class = new classes({
+     user_id:decoded.sub,
+     subject_id:subject_id,
+     name:name
+    });
+  
+    new_class
+      .save()
+      .then((data) => {
+                return res.status(200).json({
+                  resp_code: 200,
+                  resp_message: "Class added successfully!",
+                });
+
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).json({
+          resp_code: 400,
+          resp_message: err,
+        });
+      });
+  }; 
 
   module.exports = {
       login,
-      signup
+      signup,
+      add_class
   }
