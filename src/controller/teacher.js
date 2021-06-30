@@ -5,10 +5,6 @@ const jwt_decode = require("jwt-decode");
 const validator = require("validator");
 //importing models
 const User = require ("../models/user");
-//importing models
-const {
-  resturant_tables_booking,
-} = require("../models/resturants");
 
 //for signup
 const signup = async (req, res, next) => {
