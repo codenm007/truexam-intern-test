@@ -2,9 +2,13 @@ require("dotenv").config({ path: "../../.env" });
 const express = require("express");
 const router = express.Router();
 const passport = require("../config/passport");
+const {upload_image} =require("../config/upload");
 
 //imporing controllers
 const {login,signup,myclasses,get_tasks} = require("../controller/student");
+const {upload_task_image} = require("../controller/common");
+
+//importing custom middlewares
 const student_role_check = require("../middlewares/student_role_check");
 
 //public roues
@@ -25,6 +29,14 @@ router.get(
     passport.authenticate("jwt", { session: false }),
     student_role_check,
     get_tasks
+  );
+
+  router.post(
+    "/upload_task_image",
+    passport.authenticate("jwt", { session: false }),
+    student_role_check,
+    upload_image.array('upl',1),
+    upload_task_image
   );
 
 module.exports = router;

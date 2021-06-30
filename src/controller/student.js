@@ -209,9 +209,45 @@ const get_tasks = async (req, res, next) => {
 
 } 
 
+//student submit homework
+const add_submission = async (req, res, next) => {
+  let jwtlength = req.get("Authorization").length;
+  let decoded = jwt_decode(req.get("Authorization").slice(7, jwtlength));
+
+  const {class_id} = req.params;
+
+  if (!class_id) {
+    return res.status(400).json({
+      resp_code: 400,
+      resp_message: "Fields Empty !",
+      data: "",
+    });
+  }
+   
+  tasks.where({
+    class_id:class_id
+  }).fetchAll()
+  .then(data =>{
+    return res.status(200).json({
+      resp_code: 200,
+      resp_message: "Student tasks fetched successfully!",
+      data:data,
+    });
+  })
+  .catch(err =>{
+    return res.status(400).json({
+      resp_code: 400,
+      resp_message: err,
+      data: "",
+    });
+  })
+
+} 
+
   module.exports = {
       login,
       signup,
       myclasses,
-      get_tasks
+      get_tasks,
+      add_submission
   }
