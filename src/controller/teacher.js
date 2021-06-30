@@ -3,6 +3,7 @@ require("dotenv").config({ path: "../../.env" });
 const JWT = require("jsonwebtoken");
 const jwt_decode = require("jwt-decode");
 const validator = require("validator");
+const {upload_image} = require("../config/upload");
 //importing models
 const User = require ("../models/user");
 const {classes,students_in_classes} = require ("../models/class");
@@ -440,6 +441,8 @@ const edit_tasks = async (req, res, next) => {
         });
       });
   };  
+
+
 
   module.exports = {
       login,
