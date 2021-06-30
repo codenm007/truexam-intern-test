@@ -208,6 +208,21 @@ const add_student_in_class = async (req, res, next) => {
     User.forge({id:student_id, role_code:3})
     .fetch()
     .then(() => {
+
+    students_in_classes.forge({
+     user_id:student_id,
+     class_id:class_id,
+    })
+    .fetch()
+    .then(()=>{
+        return res.status(200).json({
+            resp_code: 200,
+            resp_message: "Student already added to class!",
+          });
+    })
+    .catch(()=>{
+
+   
     const new_class_student = new students_in_classes({
      user_id:student_id,
      class_id:class_id,
@@ -230,8 +245,11 @@ const add_student_in_class = async (req, res, next) => {
           resp_message: err,
         });
       });
+    });    
+
 
     }).catch(err =>{
+        console.log(err);
         return res.status(400).json({
             resp_code: 400,
             resp_message: 'Invalid student id passed !',
