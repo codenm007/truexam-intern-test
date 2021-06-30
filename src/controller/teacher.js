@@ -6,7 +6,7 @@ const validator = require("validator");
 //importing models
 const User = require ("../models/user");
 const {classes,students_in_classes} = require ("../models/class");
-
+const {tasks,submissions} = require("../models/tasks");
 //for signup
 const signup = async (req, res, next) => {
     
@@ -301,7 +301,7 @@ const get_classes = async (req, res, next) => {
 
     classes.forge({user_id:decoded.sub})
     .fetchAll({
-        withRelated: ["students"],
+        withRelated: ["students","tasks"],
     })
     .then((data) => {
    
@@ -319,7 +319,92 @@ const get_classes = async (req, res, next) => {
     })
   };  
 
+//add tasks
+const add_tasks = async (req, res, next) => {
+    let jwtlength = req.get("Authorization").length;
+    let decoded = jwt_decode(req.get("Authorization").slice(7, jwtlength));
 
+    const {class_id,title,desc, question_url, expires_at} = req.body;
+  
+    //checking if the fields are none
+    if (!class_id || !title || !question_url || !expires_at) {
+      return res.status(200).json({
+        resp_code: 400,
+        resp_message: "Fields Empty!",
+      });
+    }
+  
+    const new_tasks = new tasks({
+     user_id:decoded.sub,
+     class_id:class_id,
+     title:title,
+     desc:desc,
+     question_url:question_url,
+     expires_at:expires_at  
+    });
+  
+    new_tasks
+      .save()
+      .then((data) => {
+                return res.status(200).json({
+                  resp_code: 200,
+                  resp_message: "Tasks added successfully!",
+                });
+
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).json({
+          resp_code: 400,
+          resp_message: err,
+        });
+      });
+  }; 
+
+  //edit tasks
+const edit_tasks = async (req, res, next) => {
+    let jwtlength = req.get("Authorization").length;
+    let decoded = jwt_decode(req.get("Authorization").slice(7, jwtlength));
+
+    const {task_id,title,desc, question_url, expires_at} = req.body;
+  
+    //checking if the fields are none
+    if (!task_id) {
+      return res.status(200).json({
+        resp_code: 400,
+        resp_message: "Fields Empty!",
+      });
+    }
+  
+
+    tasks.where({id:task_id,user_id:decoded.sub})
+    .save(
+        {
+        title:title,
+        desc:desc,
+        question_url:question_url,
+        expires_at:expires_at,  
+        updated_at: `now()`,
+        },
+        { patch: true }
+      )
+      .then((data) => {
+                return res.status(200).json({
+                  resp_code: 200,
+                  resp_message: "Tasks updated successfully!",
+                });
+
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).json({
+          resp_code: 400,
+          resp_message: err,
+        });
+      });
+  }; 
+  
+  //get tasks with submissions
 
   module.exports = {
       login,
@@ -327,5 +412,7 @@ const get_classes = async (req, res, next) => {
       add_class,
       add_student_in_class,
       remove_student_from_class,
-      get_classes
+      get_classes,
+      add_tasks,
+      edit_tasks
   }

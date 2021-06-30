@@ -9,7 +9,6 @@ exports.up = function (knex) {
       t.timestamp("expires_at").notNullable();
       t.timestamp("created_at").notNullable().defaultTo(knex.raw("now()"));
       t.timestamp("updated_at").notNullable().defaultTo(knex.raw("now()"));
-      t.boolean("is_student_suspended").defaultTo(knex.raw("false"));
       //foreign keys start here
       t.foreign('user_id').references('id').inTable('users');
       t.foreign('class_id').references('id').inTable('classes');
