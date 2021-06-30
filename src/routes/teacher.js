@@ -7,7 +7,7 @@ const passport = require("../config/passport");
 const teacher_role_check = require('../middlewares/teacher_role_check');
 
 //imporing controllers
-const {login,signup,add_class,add_student_in_class} = require("../controller/teacher")
+const {login,signup,add_class,add_student_in_class,remove_student_from_class} = require("../controller/teacher")
 
 //public roues
 
@@ -27,6 +27,13 @@ router.post(
     passport.authenticate("jwt", { session: false }),
     teacher_role_check,
     add_student_in_class
+  );
+
+  router.delete(
+    "/remove_student_from_class",
+    passport.authenticate("jwt", { session: false }),
+    teacher_role_check,
+    remove_student_from_class
   );
 
 
