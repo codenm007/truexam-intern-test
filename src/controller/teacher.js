@@ -440,7 +440,54 @@ const edit_tasks = async (req, res, next) => {
           resp_message: err,
         });
       });
-  };  
+  };
+  
+  //teacher rate submission
+  const rate_submissions = async (req, res, next) => {
+    let jwtlength = req.get("Authorization").length;
+    let decoded = jwt_decode(req.get("Authorization").slice(7, jwtlength));
+
+    const {submission_id,rating} = req.body;
+  
+    //checking if the fields are none
+    if (!submission_id || !rating) {
+      return res.status(400).json({
+        resp_code: 400,
+        resp_message: "Fields Empty!",
+      });
+    }
+    //checkig if out of scale rating is given 
+    if(rating > 6){
+      return res.status(400).json({
+        resp_code: 400,
+        resp_message: "Rating should be given under 5",
+      });
+    }
+  
+
+    submissions.where({id:submission_id})
+    .save(
+      {
+        rating: rating,
+        status:3,
+        updated_at: `now()`,
+      },
+      { patch: true }
+    )
+    .then(()=>{
+      return res.status(200).json({
+        resp_code: 200,
+        resp_message: "Submission rated successfully !",
+      });
+    })
+      .catch((err) => {
+        console.log(err);
+        return res.status(400).json({
+          resp_code: 400,
+          resp_message: err,
+        });
+      });
+  };
 
 
 
@@ -453,5 +500,6 @@ const edit_tasks = async (req, res, next) => {
       get_classes,
       add_tasks,
       edit_tasks,
-      get_task_with_submissions
+      get_task_with_submissions,
+      rate_submissions
   }
