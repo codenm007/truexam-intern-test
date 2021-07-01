@@ -6,7 +6,7 @@ const validator = require("validator");
 //importing models
 const User = require ("../models/user");
 const {students_in_classes} = require("../models/class");
-const { tasks } = require("../models/tasks");
+const { tasks ,submissions} = require("../models/tasks");
 
 //for signup
 const signup = async (req, res, next) => {
@@ -214,33 +214,78 @@ const add_submission = async (req, res, next) => {
   let jwtlength = req.get("Authorization").length;
   let decoded = jwt_decode(req.get("Authorization").slice(7, jwtlength));
 
-  const {class_id} = req.params;
+  const {task_id,title,desc,answer_url} = req.body;
 
-  if (!class_id) {
+  if (!task_id||!title || !answer_url) {
     return res.status(400).json({
       resp_code: 400,
       resp_message: "Fields Empty !",
       data: "",
     });
   }
-   
-  tasks.where({
-    class_id:class_id
-  }).fetchAll()
-  .then(data =>{
-    return res.status(200).json({
-      resp_code: 200,
-      resp_message: "Student tasks fetched successfully!",
-      data:data,
+
+  //checking if the student already submitted or not
+  submissions.where({task_id:task_id,user_id:decoded.sub})
+  .fetch()
+   .then(()=>{
+    return res.status(400).json({
+      resp_code: 400,
+      resp_message: "You have already submiited you assignment !",
+      data: "",
     });
+   })
+   .catch(() => {
+  tasks.where({
+    id:task_id
+  }).fetch({
+    columns:["expires_at"]
+  })
+  .then(data =>{
+    let task_data = JSON.parse(JSON.stringify(data));
+    console.log(new Date(task_data.expires_at).getTime() , new Date().getTime());
+
+    //checking if submission datetime is over or not 
+    if(new Date(task_data.expires_at).getTime() < new Date().getTime()){
+      return res.status(400).json({
+        resp_code: 400,
+        resp_message: "Sorry submission to this task is expired !",
+        data: "",
+      });
+    }else{
+      const new_submission = new submissions({
+        task_id:task_id,
+        user_id:decoded.sub,
+        status:2,
+        title:title,
+        desc:desc,
+        answer_url:answer_url,
+        rating:0
+      })
+      new_submission.save()
+      .then(()=>{
+        return res.status(200).json({
+          resp_code: 200,
+          resp_message: "Task submission successful !"
+        });
+      }).catch(err =>{
+        return res.status(400).json({
+          resp_code: 400,
+          resp_message: "Error occured during submission",
+          data:err,
+        });
+      })
+    }
+
   })
   .catch(err =>{
     return res.status(400).json({
       resp_code: 400,
-      resp_message: err,
+      resp_message: "Invalid task id !",
       data: "",
     });
   })
+
+});
 
 } 
 
