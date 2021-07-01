@@ -56,26 +56,29 @@
 
   
 
-- **NodeJS :** 
-         - Very lightweight server.
-         - Can run on Single thread processor , so no need of expensive hosting.
-         - non-blocking I/O (can process a huge no of simultaneous concurrent request )
+ - **NodeJS :** 
+ - Very lightweight server.
 
-- **ExpressJS**
-      - Good support of MRC (Model Router Controller ) pattern so that readability of code should not be an issue during scaling.
-      - Good support of middlewares and template engines like ejs or pugjs.
-      - Unopinionated, minimalist web framework.
+    - Can run on Single thread processor , so no need of expensive hosting.
+    - Non-blocking I/O (can process a huge no of simultaneous concurrent request )
+
+ - **ExpressJS**
+   - Good support of MRC (Model Router Controller ) pattern so that
+   readability of code should not be an issue during scaling.
+
+    - Good support of middlewares and template engines like ejs or pugjs.
+    - Unopinionated, minimalist web framework.
 
 - **PostgreSQL (Due to the data in the site looks structured)**
-       - Good integration with GraphQL engines (If needed in future).
-       - Support of JSONB.
+     - Good integration with GraphQL engines (If needed in future).
+      - Support of JSONB.
        - Handles concurreny better.
        - Highly extensible as it can support numerous data types including geometric/GIS, network address types, JSONB, native UUID, timezone-aware timestamps
 
 - **S3 storage.**
-       - Scale to Tb's if needed so storage would'nt be an issue during scaling.
-       - HIghly available and cost effective.
-       - CDN integration is also easy accross different providers.
+     - Scale to Tb's if needed so storage would'nt be an issue during scaling.
+     - HIghly available and cost effective.
+     - CDN integration is also easy accross different providers.
      
 
   
