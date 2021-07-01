@@ -5,7 +5,7 @@ const passport = require("../config/passport");
 const {upload_image} =require("../config/upload");
 
 //imporing controllers
-const {login,signup,myclasses,get_tasks,add_submission} = require("../controller/student");
+const {login,signup,myclasses,get_tasks,add_submission,my_submissions} = require("../controller/student");
 const {upload_task_image} = require("../controller/common");
 
 //importing custom middlewares
@@ -17,11 +17,18 @@ router.post("/login", login);
 router.post("/signup", signup);
 
 //protected routes
-router.get(
+  router.get(
     "/myclasses",
     passport.authenticate("jwt", { session: false }),
     student_role_check,
     myclasses
+  );
+
+  router.get(
+    "/my_submissions",
+    passport.authenticate("jwt", { session: false }),
+    student_role_check,
+    my_submissions
   );
 
   router.get(

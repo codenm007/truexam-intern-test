@@ -289,10 +289,36 @@ const add_submission = async (req, res, next) => {
 
 } 
 
+//student get submssions
+const my_submissions = async (req, res, next) => {
+  let jwtlength = req.get("Authorization").length;
+  let decoded = jwt_decode(req.get("Authorization").slice(7, jwtlength));
+
+  submissions.where({user_id:decoded.sub})
+  .orderBy('created_at', 'DESC') // orderby descending i.e. latest submission should come first 
+  .fetchAll()
+   .then((data)=>{
+    return res.status(200).json({
+      resp_code: 200,
+      resp_message: "Successfully fetched submissions!",
+      data: data
+    });
+   })
+   .catch((err) => {
+    return res.status(400).json({
+      resp_code: 400,
+      resp_message: "Error getting submissions!",
+      data: err,
+    });
+});
+
+} 
+
   module.exports = {
       login,
       signup,
       myclasses,
       get_tasks,
-      add_submission
+      add_submission,
+      my_submissions
   }
